@@ -11,12 +11,14 @@ Hasta este momento, utilicé la herramienta para:
 - Preparar el proyecto con React, TypeScript y Vite.
 - Recibir instrucciones para copiar los recursos del portafolio original.
 - Comenzar la adaptación de la sección Inicio a React.
+- Sigamos trabajando en la rama antes de pasarnos a la siguiente
 
 ## 3. Prompts utilizados
 
 Algunas de las consultas realizadas fueron:
 - “Revisa y ayúdame a realizarlo”, adjuntando la rúbrica.
 - “¿Cómo puedo trae lo de la eva 2?”
+- “sigamos para hacer lo del react router”
 
 También compartí enlaces de los repositorios y resultados de la
 terminal para recibir indicaciones según el estado del proyecto.
@@ -92,6 +94,53 @@ function App() {
 
 export default App;
 ```
+### Separación de la página Inicio
+
+La IA indicó mover el contenido de App.tsx a src/pages/Inicio.tsx,
+cambiando el nombre de la función y su exportación de App a Inicio.
+El contenido de la presentación se mantuvo igual al código anterior.
+
+Para src/App.tsx recibí este código:
+
+```tsx
+import Inicio from "./pages/Inicio";
+
+function App() {
+  return <Inicio />;
+}
+
+export default App;
+```
+
+El objetivo fue separar la presentación en un componente propio.
+
+### Configuración inicial de React Router
+
+Recibí el comando para instalar React Router:
+
+```powershell
+npm install react-router-dom
+```
+
+También recibí este código para configurar la ruta de Inicio
+en src/App.tsx:
+
+```tsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Inicio from "./pages/Inicio";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Inicio />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+```
 
 ## 5. Qué se ajustó y cómo se verificó
 
@@ -104,5 +153,18 @@ se veía distinta.
 
 Está pendiente registrar la comprobación visual de la sección
 Inicio y las pruebas de las siguientes funcionalidades.
+
+Moví la presentación a src/pages/Inicio.tsx y actualicé App.tsx
+para importar y mostrar ese componente.
+
+Comprobé que la presentación y la fotografía se siguen mostrando
+igual después de separar el componente.
+
+Instalé React Router y configuré la ruta / para mostrar Inicio.
+Comprobé en el navegador que la presentación sigue apareciendo.
+
+Ejecuté npm run build: TypeScript y Vite completaron la compilación
+sin errores. También ejecuté npm run lint y ESLint no reportó problemas.
+Estas comprobaciones no reemplazan la revisión visual en el navegador.
 
 ## 6. Reflexión final
