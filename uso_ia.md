@@ -167,4 +167,11 @@ Ejecuté npm run build: TypeScript y Vite completaron la compilación
 sin errores. También ejecuté npm run lint y ESLint no reportó problemas.
 Estas comprobaciones no reemplazan la revisión visual en el navegador.
 
+Después de instalar React Router, npm informó 11 vulnerabilidades
+de severidad alta relacionadas con picomatch y las herramientas
+de desarrollo que dependen de él.
+
+Ejecuté npm audit y npm audit --omit=dev. El segundo comando
+reportó 0 vulnerabilidades.
+
 ## 6. Reflexión final
