@@ -12,6 +12,7 @@ Hasta este momento, utilicé la herramienta para:
 - Recibir instrucciones para copiar los recursos del portafolio original.
 - Comenzar la adaptación de la sección Inicio a React.
 - Para ayudar con las ramas de que archivo deb eir en cada rama 
+- Ayudo a recuperar contactos que estaba en la eva 2
 ## 3. Prompts utilizados
 
 Algunas de las consultas realizadas fueron:
@@ -21,7 +22,7 @@ Algunas de las consultas realizadas fueron:
 - Trabajemos lo de la nueva rama
 - Sigamos adapantando el portafolio a lo nuevo
 - Revisa mis avances para verificar si esta bien en esta rama 
-
+- Sigamos con la nueva rama
 
 También compartí enlaces de los repositorios y resultados de la
 terminal para recibir indicaciones según el estado del proyecto.
@@ -304,6 +305,266 @@ function App() {
 
 export default App;
 
+### Componente FormularioContacto
+
+Recibí el código de FormularioContacto.tsx basado en el formulario
+de la Evaluación 2, conservando sus clases y campos.
+
+Se adaptaron los atributos a JSX y se agregó required.
+La gestión del estado y la confirmación están pendientes.
+function FormularioContacto() {
+  return (
+    <form className="contact-form">
+      <div className="form-group">
+        <label htmlFor="nombre">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          placeholder="Tu nombre"
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="correo">Correo electrónico</label>
+        <input
+          type="email"
+          id="correo"
+          name="correo"
+          placeholder="tu@email.com"
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="mensaje">Mensaje</label>
+        <textarea
+          id="mensaje"
+          name="mensaje"
+          rows={6}
+          placeholder="Escribe tu mensaje..."
+          required
+        />
+      </div>
+
+      <button type="submit">Enviar mensaje</button>
+    </form>
+  );
+}
+
+export default FormularioContacto;
+
+### Página Contacto y navegación
+
+Recibí el código de Contacto.tsx, que muestra FormularioContacto,
+y las actualizaciones de App.tsx y Header.tsx para acceder mediante
+la ruta /contacto. Se conservaron los textos y clases de la E2.
+
+import FormularioContacto from "../components/FormularioContacto";
+
+function Contacto() {
+  return (
+    <main>
+      <section className="contact">
+        <div className="section-header">
+          <p className="section-tag">03 / CONTACTO</p>
+
+          <h1>¿Hablamos?</h1>
+
+          <p>
+            Si quieres contactarme, puedes dejarme un mensaje.
+          </p>
+        </div>
+
+        <FormularioContacto />
+      </section>
+    </main>
+  );
+}
+
+export default Contacto;
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import Inicio from "./pages/Inicio";
+import SobreMi from "./pages/SobreMi";
+import Proyectos from "./pages/Proyectos";
+import Contacto from "./pages/Contacto";
+import NoEncontrado from "./pages/NoEncontrado";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Inicio />} />
+          <Route path="/proyectos" element={<Proyectos />} />
+          <Route path="/sobre-mi" element={<SobreMi />} />
+          <Route path="/contacto" element={<Contacto />} />
+          <Route path="*" element={<NoEncontrado />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+import { Link, NavLink } from "react-router-dom";
+
+function Header() {
+  return (
+    <header>
+      <nav className="navbar" aria-label="Navegación principal">
+        <Link to="/" className="logo">
+          BS.
+        </Link>
+
+        <ul className="nav-links">
+          <li>
+            <NavLink to="/" end>
+              Inicio
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/proyectos">
+              Proyectos
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/sobre-mi">
+              Sobre mí
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/contacto">
+              Contacto
+            </NavLink>
+          </li>
+        </ul>
+      </nav>
+    </header>
+  );
+}
+
+export default Header;
+
+### Estado, validación y confirmación del formulario
+
+Recibí el componente FormularioContacto actualizado con useState,
+campos controlados y manejo del evento submit.
+
+Se agregó validación de campos vacíos, espacios y longitud del
+mensaje, además de la validación nativa del correo. La confirmación
+aclara que es una demostración y que no se envían mensajes.
+import { useState } from "react";
+import type { FormEvent } from "react";
+
+function FormularioContacto() {
+  const [nombre, setNombre] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
+  const [confirmacion, setConfirmacion] = useState("");
+
+  function limpiarAvisos() {
+    setError("");
+    setConfirmacion("");
+  }
+
+  function manejarEnvio(evento: FormEvent<HTMLFormElement>) {
+    evento.preventDefault();
+    limpiarAvisos();
+
+    if (!nombre.trim() || !correo.trim() || !mensaje.trim()) {
+      setError("Completa todos los campos sin usar solo espacios.");
+      return;
+    }
+
+    if (mensaje.trim().length < 10) {
+      setError("El mensaje debe tener al menos 10 caracteres.");
+      return;
+    }
+
+    setConfirmacion(
+      `Gracias, ${nombre.trim()}. Los datos se validaron correctamente. ` +
+      "Esta es una demostración: no se ha enviado ningún mensaje."
+    );
+
+    setNombre("");
+    setCorreo("");
+    setMensaje("");
+  }
+
+  return (
+    <form className="contact-form" onSubmit={manejarEnvio}>
+      <div className="form-group">
+        <label htmlFor="nombre">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          placeholder="Tu nombre"
+          autoComplete="name"
+          value={nombre}
+          onChange={(evento) => {
+            setNombre(evento.target.value);
+            limpiarAvisos();
+          }}
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="correo">Correo electrónico</label>
+        <input
+          type="email"
+          id="correo"
+          name="correo"
+          placeholder="tu@email.com"
+          autoComplete="email"
+          value={correo}
+          onChange={(evento) => {
+            setCorreo(evento.target.value);
+            limpiarAvisos();
+          }}
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="mensaje">Mensaje</label>
+        <textarea
+          id="mensaje"
+          name="mensaje"
+          rows={6}
+          placeholder="Escribe tu mensaje..."
+          value={mensaje}
+          onChange={(evento) => {
+            setMensaje(evento.target.value);
+            limpiarAvisos();
+          }}
+          required
+        />
+      </div>
+
+      <p>Formulario de demostración: no envía correos.</p>
+
+      {error && <p role="alert">{error}</p>}
+
+      <p role="status">{confirmacion}</p>
+
+      <button type="submit">Enviar mensaje</button>
+    </form>
+  );
+}
+
+export default FormularioContacto;
+
 ## 5. Qué se ajustó y cómo se verificó
 
 Ejecuté el proyecto y comprobé que se mostraba la pantalla inicial
@@ -342,5 +603,16 @@ y que Inicio se muestra subrayado como ruta activa.
 
 Visité /prueba y comprobé que aparece la página 404.
 También comprobé que el enlace Volver al inicio lleva a la presentación.
+
+Comprobé que el enlace Contacto muestra el título, los campos
+Nombre, Correo electrónico y Mensaje, y el botón Enviar mensaje.
+La lógica del formulario todavía está pendiente.
+
+Probé el formulario con campos vacíos, correo inválido y un mensaje
+de menos de 10 caracteres. En cada caso se mostró la validación
+correspondiente.
+
+Con datos válidos apareció la confirmación de demostración y se
+limpiaron los campos. No se envió ningún correo.
 
 ## 6. Reflexión final
