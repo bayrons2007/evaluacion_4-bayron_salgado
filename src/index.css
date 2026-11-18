@@ -549,3 +549,8 @@ footer {
         padding: 25px 20px;
     }
 }
+
+.nav-links a.active {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}

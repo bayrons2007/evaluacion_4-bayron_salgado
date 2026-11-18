@@ -1,7 +1,7 @@
 function Inicio() {
   return (
     <main>
-      <section className="hero">
+      <section id="inicio" className="hero">
         <div className="hero-text">
           <p className="hero-tag">
             DESARROLLADOR EN FORMACIÓN
