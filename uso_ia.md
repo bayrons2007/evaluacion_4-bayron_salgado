@@ -13,6 +13,7 @@ Hasta este momento, utilicé la herramienta para:
 - Comenzar la adaptación de la sección Inicio a React.
 - Para ayudar con las ramas de que archivo deb eir en cada rama 
 - Ayudo a recuperar contactos que estaba en la eva 2
+- Ayuda con la API la cual fue la de github la elegida 
 ## 3. Prompts utilizados
 
 Algunas de las consultas realizadas fueron:
@@ -23,6 +24,8 @@ Algunas de las consultas realizadas fueron:
 - Sigamos adapantando el portafolio a lo nuevo
 - Revisa mis avances para verificar si esta bien en esta rama 
 - Sigamos con la nueva rama
+- Bien ya esta el merge de formuluario sigamos con la otra rama para ver lo de la api 
+- Yo me encargo de las pruebas solo dame lo de codigo que falta y se necesita para terminar esto de la api 
 
 También compartí enlaces de los repositorios y resultados de la
 terminal para recibir indicaciones según el estado del proyecto.
@@ -565,6 +568,197 @@ function FormularioContacto() {
 
 export default FormularioContacto;
 
+### Tipos para la API de GitHub
+
+Elegí la API de GitHub porque permite mostrar mis repositorios
+y mantiene la temática del portafolio.
+
+Recibí la interfaz RepositorioGitHub en src/types/github.ts
+para definir los campos que utilizará la aplicación.
+Los campos description y language permiten null porque
+pueden no tener un valor.
+
+export interface RepositorioGitHub {
+  id: number;
+  name: string;
+  description: string | null;
+  html_url: string;
+  language: string | null;
+  stargazers_count: number;
+}
+
+### Servicio de consulta a GitHub
+
+Recibí el código de src/services/github.ts para consultar los seis
+repositorios públicos actualizados más recientemente de mi cuenta.
+
+El servicio utiliza fetch, comprueba el estado HTTP y devuelve
+una respuesta tipada. También guarda el resultado en memoria
+y reutiliza una petición en curso para evitar consultas duplicadas.
+
+Está pendiente conectar el servicio a un componente y comprobar
+la carga de datos y el manejo de errores.
+
+import type { RepositorioGitHub } from "../types/github";
+
+const URL_API =
+  "https://api.github.com/users/bayrons2007/repos?sort=updated&direction=desc&per_page=6";
+
+let cache: RepositorioGitHub[] | null = null;
+let peticionPendiente: Promise<RepositorioGitHub[]> | null = null;
+
+async function consultarGitHub(): Promise<RepositorioGitHub[]> {
+  const respuesta = await fetch(URL_API, {
+    headers: {
+      Accept: "application/vnd.github+json",
+    },
+  });
+
+  if (!respuesta.ok) {
+    throw new Error(
+      `No se pudieron cargar los repositorios. Código: ${respuesta.status}.`
+    );
+  }
+
+  const datos: RepositorioGitHub[] = await respuesta.json();
+
+  cache = datos;
+  return datos;
+}
+
+export async function obtenerRepositorios(): Promise<RepositorioGitHub[]> {
+  if (cache !== null) {
+    return cache;
+  }
+
+  if (peticionPendiente === null) {
+    peticionPendiente = consultarGitHub();
+  }
+
+  try {
+    return await peticionPendiente;
+  } finally {
+    peticionPendiente = null;
+  }
+}
+
+### Visualización de repositorios de GitHub
+
+Recibí el componente RepositoriosGitHub.tsx y las indicaciones
+para incorporarlo debajo de los proyectos originales.
+
+Utiliza useEffect para llamar al servicio y useState para gestionar
+datos, carga, errores y reintentos. Incluye una limpieza del efecto
+para ignorar respuestas cuando el componente ya no está activo.
+
+Reutiliza las clases de las tarjetas originales.
+
+import { useEffect, useState } from "react";
+import { obtenerRepositorios } from "../services/github";
+import type { RepositorioGitHub } from "../types/github";
+
+function RepositoriosGitHub() {
+  const [repositorios, setRepositorios] = useState<RepositorioGitHub[]>([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  const [intento, setIntento] = useState(0);
+
+  useEffect(() => {
+    let activo = true;
+
+    async function cargarRepositorios() {
+      setCargando(true);
+      setError("");
+
+      try {
+        const datos = await obtenerRepositorios();
+
+        if (activo) {
+          setRepositorios(datos);
+        }
+      } catch (errorRecibido: unknown) {
+        if (activo) {
+          setError(
+            errorRecibido instanceof Error
+              ? errorRecibido.message
+              : "Ocurrió un error al consultar GitHub."
+          );
+        }
+      } finally {
+        if (activo) {
+          setCargando(false);
+        }
+      }
+    }
+
+    cargarRepositorios();
+
+    return () => {
+      activo = false;
+    };
+  }, [intento]);
+
+  return (
+    <section aria-labelledby="titulo-github">
+      <div className="section-header">
+        <h2 id="titulo-github">Mis repositorios en GitHub</h2>
+        <p>Seis repositorios públicos actualizados más recientemente.</p>
+      </div>
+
+      {cargando && (
+        <p role="status">Cargando repositorios...</p>
+      )}
+
+      {!cargando && error && (
+        <div>
+          <p role="alert">{error}</p>
+          <button
+            type="button"
+            onClick={() => setIntento((anterior) => anterior + 1)}
+          >
+            Reintentar
+          </button>
+        </div>
+      )}
+
+      {!cargando && !error && repositorios.length === 0 && (
+        <p>No se encontraron repositorios públicos.</p>
+      )}
+
+      {!cargando && !error && repositorios.length > 0 && (
+        <div className="project-grid">
+          {repositorios.map((repositorio) => (
+            <a
+              key={repositorio.id}
+              href={repositorio.html_url}
+              className="project-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <h3>{repositorio.name}</h3>
+              <p>{repositorio.description ?? "Sin descripción."}</p>
+              <p>
+                Lenguaje: {repositorio.language ?? "No especificado"}
+              </p>
+              <p>Estrellas: {repositorio.stargazers_count}</p>
+              <span>Abrir en GitHub (nueva pestaña) →</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+export default RepositoriosGitHub;
+
+import RepositoriosGitHub from "../components/RepositoriosGitHub";
+
+      </section>
+
+      <RepositoriosGitHub />
+    </main>
+
 ## 5. Qué se ajustó y cómo se verificó
 
 Ejecuté el proyecto y comprobé que se mostraba la pantalla inicial
@@ -614,5 +808,19 @@ correspondiente.
 
 Con datos válidos apareció la confirmación de demostración y se
 limpiaron los campos. No se envió ningún correo.
+
+en las pruebas identifique que los botones de vokver inciio de los proyectos fallaban asi que cambie la ubicacion de cada uno para arreglarlo correctamente 
+
+Comprobé que la sección de GitHub muestra repositorios de mi cuenta
+debajo de los proyectos originales. Las tarjetas originales siguen
+abriendo los proyectos locales.
+
+Comprobé que las tarjetas obtenidas de la API abren el repositorio
+correspondiente en GitHub en una pestaña nueva.
+
+Probé una ruta inexistente de la API y comprobé que aparece
+un mensaje de error con el botón Reintentar.
+Después restauré la URL correcta y comprobé que los repositorios
+volvieron a cargar.
 
 ## 6. Reflexión final

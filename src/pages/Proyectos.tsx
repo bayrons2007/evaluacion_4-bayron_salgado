@@ -1,5 +1,6 @@
 import { proyectos } from "../data/proyectos";
 import ProjectCard from "../components/ProjectCard";
+import RepositoriosGitHub from "../components/RepositoriosGitHub";
 
 function Proyectos() {
   return (
@@ -25,6 +26,7 @@ function Proyectos() {
           ))}
         </div>
       </section>
+      <RepositoriosGitHub />
     </main>
   );
 }
