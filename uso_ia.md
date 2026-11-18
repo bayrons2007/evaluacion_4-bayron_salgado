@@ -254,6 +254,56 @@ function Header() {
 
 export default Header;
 
+### Manejo de rutas inexistentes
+
+Recibí el componente NoEncontrado.tsx y la actualización de App.tsx
+con una ruta comodín (*). Esta muestra una página 404 con un enlace
+para regresar al inicio, conservando el encabezado y el pie de página.
+
+import { Link } from "react-router-dom";
+
+function NoEncontrado() {
+  return (
+    <main>
+      <section>
+        <p>ERROR 404</p>
+        <h1>Página no encontrada</h1>
+        <p>La dirección que visitaste no existe en este portafolio.</p>
+
+        <Link to="/" className="back-link">
+          Volver al inicio
+        </Link>
+      </section>
+    </main>
+  );
+}
+
+export default NoEncontrado;
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import Inicio from "./pages/Inicio";
+import SobreMi from "./pages/SobreMi";
+import Proyectos from "./pages/Proyectos";
+import NoEncontrado from "./pages/NoEncontrado";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Inicio />} />
+          <Route path="/proyectos" element={<Proyectos />} />
+          <Route path="/sobre-mi" element={<SobreMi />} />
+          <Route path="*" element={<NoEncontrado />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
 ## 5. Qué se ajustó y cómo se verificó
 
 Ejecuté el proyecto y comprobé que se mostraba la pantalla inicial
@@ -289,5 +339,8 @@ reportó 0 vulnerabilidades.
 Creé Header.tsx y lo incorporé en App.tsx. Comprobé que aparecen
 el logo BS. y el enlace Inicio, que ambos llevan a la presentación
 y que Inicio se muestra subrayado como ruta activa.
+
+Visité /prueba y comprobé que aparece la página 404.
+También comprobé que el enlace Volver al inicio lleva a la presentación.
 
 ## 6. Reflexión final
