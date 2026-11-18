@@ -758,6 +758,63 @@ import RepositoriosGitHub from "../components/RepositoriosGitHub";
 
       <RepositoriosGitHub />
     </main>
+### Corrección de Inicio en móvil
+
+Al probar el sitio a 375 px detecté desplazamiento horizontal
+en Inicio por la fotografía.
+
+La IA identificó que faltaba el contenedor hero-content,
+utilizado por las reglas responsivas del CSS original,
+y proporcionó el componente Inicio corregido.
+
+function Inicio() {
+  return (
+    <main>
+      <section className="hero">
+        <div className="hero-content">
+          <div className="hero-text">
+            <p className="hero-tag">
+              DESARROLLADOR EN FORMACIÓN
+            </p>
+
+            <h1>
+              CREANDO IDEAS{" "}
+              <span>A TRAVÉS DEL CÓDIGO.</span>
+            </h1>
+
+            <p className="hero-description">
+              Soy estudiante de Ingeniería Civil Informática,
+              interesado en el desarrollo de soluciones digitales
+              y en seguir aprendiendo nuevas tecnologías.
+            </p>
+          </div>
+
+          <div className="hero-image">
+            <div className="image-circle">
+              <img
+                src="/imagenes/polar.jpeg"
+                alt="Foto de Bayron Salgado"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export default Inicio;
+
+### Corrección de contraste del pie de página
+
+Lighthouse señaló contraste insuficiente en el texto del footer.
+La IA propuso cambiar su color de #666666 a un gris más claro:
+
+```css
+color: #a8a8a8;
+```
+
+Se mantuvo el fondo y la estructura del diseño original.
 
 ## 5. Qué se ajustó y cómo se verificó
 
@@ -823,4 +880,83 @@ un mensaje de error con el botón Reintentar.
 Después restauré la URL correcta y comprobé que los repositorios
 volvieron a cargar.
 
+### Pruebas finales y correcciones
+
+#### Vista móvil
+
+Probé Inicio, Proyectos, Sobre mí y Contacto a un ancho de 375 px.
+
+Detecté que la fotografía de Inicio provocaba desplazamiento
+horizontal. Agregué el contenedor hero-content que utilizaba
+el CSS original y comprobé que la imagen quedó debajo del texto.
+
+Las tarjetas de Proyectos se acomodaron hacia abajo.
+Sobre mí y Contacto se mostraron correctamente.
+
+#### Navegación con teclado
+
+Probé la navegación con Tab y Enter. Comprobé que se distingue
+el elemento seleccionado y que puedo recorrer el menú,
+los campos del formulario y el botón.
+
+#### Accesibilidad
+
+Ejecuté Lighthouse en /contacto y obtuve inicialmente 96 puntos
+en accesibilidad. El informe señaló contraste insuficiente
+en el texto del pie de página.
+
+Cambié su color de #666666 a #a8a8a8 y repetí la auditoría.
+El resultado fue 100 en accesibilidad para Contacto.
+Este resultado no corresponde a una auditoría de todo el sitio.
+
+#### Proyectos originales
+
+Comprobé estas funciones:
+
+- Memoria: voltear cartas, encontrar parejas y reiniciar.
+- Menú digital: filtrar los productos por categoría.
+- Tetris: mover y girar las piezas y reiniciar.
+
+Las funciones probadas respondieron correctamente.
+
+#### API de GitHub
+
+Comprobé que se muestran mis repositorios y que sus tarjetas
+abren el repositorio correspondiente en una pestaña nueva.
+
+Para comprobar la caché, observé las solicitudes en Network.
+Después de ir a Sobre mí y volver a Proyectos sin recargar,
+los datos siguieron apareciendo y no se agregó otra petición
+a la API.
+
+También probé la recuperación después de un fallo:
+recargué Inicio, activé Offline y entré a Proyectos desde el menú.
+Apareció el error de carga. Luego restablecí la conexión
+y pulsé Reintentar. Los repositorios volvieron a aparecer.
+
+Comparé el portafolio de React con el original de la Evaluación 2.
+Comprobé que se mantienen los colores y la información.
+Las diferencias visuales más notorias son el encabezado adaptado
+a las rutas y la nueva sección de repositorios de GitHub.
+
+Después de las correcciones finales ejecuté npm run build
+y npm run lint. Ambos terminaron sin errores.
+
 ## 6. Reflexión final
+
+La IA me ayudó a interpretar la pauta y adaptar mi portafolio
+a React y TypeScript. La utilicé para recibir explicaciones,
+propuestas de código y ayuda con los errores.
+
+Durante el trabajo comprendí mejor cómo separar páginas y
+componentes, pasar datos mediante props y utilizar rutas.
+También trabajé con estados para el formulario y para mostrar
+la carga, los datos y los errores de la API de GitHub.
+
+No todas las propuestas quedaron correctas al primer intento.
+Por ejemplo, en Inicio faltaba un contenedor que utilizaba
+el CSS original, lo que provocaba desplazamiento horizontal
+en móvil. Lo detecté al probar la página y lo corregí con apoyo
+de la IA. También revisé el contraste del pie con Lighthouse.
+
+Esto me mostró que no basta con copiar código: necesito probarlo, revisar que cumpla la pauta y entender qué hace. Todavía debo seguir practicando mas para poder comprender todo de una mejor manera y poder llegar a no repetir los mismos errores y quedar atrapado en los mismos problemas, pero siento que me ayudo bastante a comprender y probar y fallar un prueba y error 
